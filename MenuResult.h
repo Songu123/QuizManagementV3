@@ -14,9 +14,11 @@
 #include <iomanip>
 #include <ctime>
 #include <sstream>
+
 using namespace std;
 class MenuResult {
 public:
+    int sumPointQuiz(string time_User);
     void resultDetail(string timeUser);
     void resultUser(string timeUser);
     void rankQuiz(int quiz_id);

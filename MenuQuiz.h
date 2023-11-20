@@ -21,6 +21,7 @@ class MenuQuiz {
 public:
 //    int checkAnswer(int n, char answerUser);
 //    void test(int quiz_id);
+    int sumPointQuiz(string time_User);
     void startQuiz();
     void getQuizHistory();
     void menuQuiz();

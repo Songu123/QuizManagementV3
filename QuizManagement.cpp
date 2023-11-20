@@ -7,7 +7,6 @@
 using namespace std;
 using namespace mysqlpp;
 
-
 //    Hàm chạy
 void QuizManagement::run(){
     while(true){
@@ -48,16 +47,32 @@ void QuizManagement::run(){
     }
 }
 
+void printHorizontalLine(int width) {
+    for (int i = 0; i < width; ++i) {
+        std::cout << "-";
+    }
+    std::cout << std::endl;
+}
+
 void QuizManagement::listQuizs(){
+    int quizID;
+    string nameQuiz;
     try {
         Database::connectToDatabase();
         Query query = Database::con.query("SELECT * from quizs");
         StoreQueryResult sqr = query.store();
         if(sqr){
             cout << "DANH SÁCH CÁC ĐỀ" << endl;
+            printHorizontalLine(10 + 100 + 3);
+            std::cout << "| " << std::left << std::setw(10) << "ID" << " | " << std::setw(100) << "Tên" << " |" << std::endl;
+            printHorizontalLine(10 + 100 + 3);
+
             for(size_t i = 0; i < sqr.size(); i++){
                 Row row = sqr[i];
-                cout << "ID: " << row[0] << ", Name: " << row[1] << ", Description: " << row[2] << endl;
+                quizID = (int) row[0];
+                nameQuiz = (string) row[1];
+                std::cout << "| " << std::left << std::setw(10) << quizID << " | " << std::setw(100) << nameQuiz << " |" << std::endl;
+                printHorizontalLine(10 + 100 + 3);
             }
         } else {
             cout << "Không có dữ liệu!" << endl;
@@ -219,7 +234,7 @@ void QuizManagement::deleteQuiz() {
         Query query = Database::con.query("DELETE FROM quizs WHERE id = " + to_string(id) + "");
         query.execute();
     }catch (const Exception &e) {
-        cout << e.what() << endl;
+        cout << "Lỗi: " << e.what() << endl;
     }
 
 }

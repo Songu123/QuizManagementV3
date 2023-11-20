@@ -110,7 +110,7 @@ int logIn() {
                 success = 1;
             } else success = 0;
         }
-        cout << "id admin: " << CurrentUser::getUserID() << endl;
+//        cout << "id admin: " << CurrentUser::getUserID() << endl;
     } catch (Exception e) {
         cout << e.what() << endl;
     }

@@ -112,15 +112,33 @@ void MenuResult::resultUser(string timeUser){
                                                              " WHERE r.time = '"+ timeUser +"'");
         StoreQueryResult sqr2 = query_sum_point_question.store();
         Row row2 = sqr2[0];
-        cout << "Số câu đúng là: " << row[1] << "/" << row2[1] << " câu." << endl;
-        cout << "Điểm: " << row[0] << "/" << row2[0] << " điểm." << endl;
+        cout << "\n*****************************************" << endl;
+        cout << "***   Số câu đúng là: " << row[1] << "/" << row2[1] << " câu    ***" << endl;
+        cout << "***   Điểm: " << row[0] << "/" << row2[0] << " điểm.            ***" << endl;
+        cout << "*****************************************" << endl;
+
     }catch(Exception &e) {
         cout << "Lỗi: " << e.what() << endl;
     }
 }
 
+int MenuResult::sumPointQuiz(string time_User){
+    string timeUser = time_User;
+    int pointQuiz;
+    Database::connectToDatabase();
+    Query query_sum_point_question = Database::con.query("SELECT SUM(q.point), count(q.id) from questions q inner join"
+                                                         " result_detail rd on rd.questions_id = q.id INNER JOIN results r on r.id = rd.results_id"
+                                                         " WHERE r.time = '"+ (timeUser) +"'");
+    StoreQueryResult sqr2 = query_sum_point_question.store();
+    Row row2 = sqr2[0];
+    pointQuiz = (int) row2[0];
+    return pointQuiz;
+}
+
 // HÀM HIỂN THỊ BẢNG XẾP HẠNG
 void MenuResult::rankQuiz(int quiz_id) {
+    string username, timeUser;
+    int point;
     try{
         Database::connectToDatabase();
         Query query_username_time_point = Database::con.query("SELECT u.username, r.`time`,COUNT(a.id)*10 as \"Điểm\"  FROM results r inner join users u on u.id = r.users_id inner join result_detail rd on r.id = rd.results_id INNER join questions q on rd.questions_id = q.id INNER join answers a on a.id = rd.answers_id WHERE r.quizs_id = "+
@@ -131,7 +149,7 @@ void MenuResult::rankQuiz(int quiz_id) {
             const int columnWidth = 30;
 
             // In khung đầu tiên
-            std::cout << std::setfill('-') << std::setw(columnWidth * 4 + 6) << "" << std::setfill(' ') << std::endl;
+            std::cout << std::setfill('-') << std::setw(columnWidth * 3 + 4) << "" << std::setfill(' ') << std::endl;
 
             // In tên cột
             std::cout << '|' << std::setw(5) << std::left << "STT" << '|'
@@ -140,16 +158,26 @@ void MenuResult::rankQuiz(int quiz_id) {
                       << std::setw(columnWidth) << std::left << "Điểm" << '|' << std::endl;
 
             // In khung thứ hai
-            std::cout << std::setfill('-') << std::setw(columnWidth * 4 + 6) << "" << std::setfill(' ') << std::endl;
+            std::cout << std::setfill('-') << std::setw(columnWidth * 3 + 4) << "" << std::setfill(' ') << std::endl;
             std::cout << std::setfill('-') << std::setw(columnWidth * 3 + 4) << "" << std::setfill(' ') << std::endl;
 
             for (int i = 0; i < sqr_query_username_time_point.num_rows(); ++i) {
+//                Row row_query_username_time_point = sqr_query_username_time_point[i];
+//                username = (string)row_query_username_time_point[0];
+//                timeUser = (string)row_query_username_time_point[1];
+//                point = row_query_username_time_point[2];
+//                std::cout << '|' << std::setw(5) << std::left << i + 1 << '|'
+//                          << std::setw(columnWidth) << std::left << username << '|'
+//                          << std::setw(columnWidth) << std::left << timeUser << '|'
+//                          << std::setw(3) << std::left << point << "/" << std::setw(5) << sumPointQuiz(
+//                        timeUser)<< '|' << std::endl;
                 Row row_query_username_time_point = sqr_query_username_time_point[i];
                 std::cout << '|' << std::setw(5) << std::left << i + 1 << '|'
                           << std::setw(columnWidth) << std::left << row_query_username_time_point[0] << '|'
                           << std::setw(columnWidth) << std::left << row_query_username_time_point[1] << '|'
-                          << std::setw(columnWidth) << std::left << row_query_username_time_point[2] << '|' << std::endl;
-
+                          << std::setw(3) << std::left << row_query_username_time_point[2]
+//                          << '/' << sumPointQuiz(row_query_username_time_point[2])
+                          << '|' << std::endl;
                 // In khung xen kẽ
                 std::cout << std::setfill('-') << std::setw(columnWidth * 3 + 4) << "" << std::setfill(' ') << std::endl;
             }

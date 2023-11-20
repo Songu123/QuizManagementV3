@@ -2,9 +2,12 @@
 // Created by MacBook on 08/11/2023.
 //
 #include "UserManagement.h"
+#include "MenuResult.h"
 
 using namespace std;
 using namespace mysqlpp;
+
+MenuResult menuResult;
 
 void UserManagement::run() {
     while (true) {
@@ -27,15 +30,15 @@ void UserManagement::run() {
             switch (choose) {
                 case 1:
                     cout << "\nDANH SÁCH NGƯỜI DÙNG" << endl;
-                    listUsers();
+                    UserManagement::listUsers();
                     break;
                 case 2:
                     cout << "\nTẠO NGƯỜI DÙNG MỚI" << endl;
-                    createUser();
+                    UserManagement::createUser();
                     break;
                 case 3:
                     cout << "\nCHỈNH SỬA NGƯỜI DÙNG" << endl;
-                    updateUser();
+                    UserManagement::updateUser();
                     break;
                 case 4:
                     cout << "\nQUẢN LÝ KẾT QUẢ NGƯỜI DÙNG" << endl;
@@ -82,6 +85,11 @@ void UserManagement::listUsers() {
                           << std::setw(10) << row[3]
                           << std::setw(30) << row[4] << std::endl;
             }
+            for (int i = 0; i < 70; ++i) {
+                std::cout << "-";
+            }
+            std::cout << std::endl;
+
         } else {
             std::cout << "Không có dữ liệu người dùng." << std::endl;
         }
@@ -104,7 +112,7 @@ void UserManagement::createUser() {
     cout << "Nhập email: ";
     getline(cin, email);
 
-    cout << "Nhập birthdate: ";
+    cout << "Nhập birthdate (năm-tháng-ngày ): ";
     getline(cin, birthdate);
 
     bool ok = true;
@@ -140,6 +148,7 @@ void UserManagement::createUser() {
                                           email + "', '" + password + "');");
         query.execute();
     } catch (const Exception &e) {
+        cout << "không thể tạo người dùng mới!" << endl;
         cout << "Lỗi MySQL: " << e.what() << endl;
     }
 }
@@ -183,6 +192,8 @@ void UserManagement::updateUser() {
 }
 
 void UserManagement::listResultUser() {
+    string username, quizID, quizName, timeUser;
+    int point;
     try {
         Database::connectToDatabase();
         Query query_get_Infor_User = Database::con.query(
@@ -199,7 +210,7 @@ void UserManagement::listResultUser() {
                       << std::setw(10) << "Quiz ID"
                       << std::setw(30) << "Quiz Name"
                       << std::setw(20) << "Time"
-                      << std::setw(15) << "Điểm" << std::endl;
+                      << std::setw(3) << "Điểm" << std::endl;
 
             // Print a horizontal line
             for (int i = 0; i < 95; ++i) {
@@ -210,13 +221,23 @@ void UserManagement::listResultUser() {
             // Print the data rows
             for (size_t i = 0; i < sqr_query_get_Infor_User.size(); ++i) {
                 Row row = sqr_query_get_Infor_User[i];
+                username = (string) row[0];
+                quizID = (string)row[1];
+                quizName = (string)row[2];
+                timeUser = (string)row[3];
+                point = row[4];
                 std::cout << std::setw(5) << i + 1
-                          << std::setw(20) << row[0]
-                          << std::setw(10) << row[1]
-                          << std::setw(30) << row[2]
-                          << std::setw(30) << row[3]
-                          << std::setw(20) << row[4] << std::endl;
+                          << std::setw(20) << username
+                          << std::setw(10) << quizID
+                          << std::setw(30) << quizName
+                          << std::setw(30) << timeUser
+                          << std::setw(3) << point << "/" << menuResult.sumPointQuiz(timeUser)<< std::endl;
             }
+
+            for (int i = 0; i < 95; ++i) {
+                std::cout << "-";
+            }
+            std::cout << std::endl;
         } else {
             std::cout << "Không có dữ liệu kết quả người dùng." << std::endl;
         }

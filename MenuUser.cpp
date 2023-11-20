@@ -39,16 +39,20 @@ void MenuUser::menuUser() {
 
 void MenuUser::signUp() {
     string userName, password;
-    cout << "Mời bạn tạo Username: " << endl;
-    getline(cin, userName);
-    cout << "Mời bạn tạo Password: " << endl;
-    getline(cin, password);
-    Database::connectToDatabase();
-    Query q = Database::con.query(
-            "INSERT INTO users (username, password) VALUES('" + userName + "','" + password + "');");
+    try{
+        cout << "Mời bạn tạo Username: " << endl;
+        getline(cin, userName);
+        cout << "Mời bạn tạo Password: " << endl;
+        getline(cin, password);
+        Database::connectToDatabase();
+        Query q = Database::con.query(
+                "INSERT INTO users (username, password) VALUES('" + userName + "','" + password + "');");
 //    execute() => Thêm, sửa, xoá dữ liệu
-    q.execute();
-    cout << "Bạn đã tạo thành công!";
+        q.execute();
+        cout << "Bạn đã tạo thành công!";
+    } catch(Exception &e){
+        cout << "Lỗi: " << e.what() << endl;
+    }
 }
 
 int MenuUser::logIn() {
